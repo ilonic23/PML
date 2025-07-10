@@ -6,4 +6,8 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <PackageReference Include="CmlLib.Core" Version="4.0.5" />
+    </ItemGroup>
+
 </Project>
