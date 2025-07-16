@@ -9,16 +9,31 @@ namespace PML;
 public class Launcher
 {
     private readonly MinecraftLauncher _launcher;
+    public static Launcher StaticLauncher { get; set; } = new Launcher();
+    private bool _isEmptyConstructorUsed { get; set; }
+    public event EventHandler<ByteProgress> ByteProgressChanged; 
 
     public string MinecraftNetherAuthFix { get; } =
         "-Dminecraft.api.auth.host=https://nope.invalid -Dminecraft.api.account.host=https://nope.invalid -Dminecraft.api.session.host=https://nope.invalid -Dminecraft.api.services.host=https://nope.invalid";
 
+    public Launcher()
+    {
+        _launcher = new MinecraftLauncher();
+        _isEmptyConstructorUsed = true;
+    }
     public Launcher(string path)
     {
         _launcher = new (new PMLPath(path));
+        _isEmptyConstructorUsed = false;
+        _launcher.ByteProgressChanged += (sender, progress) =>
+        {
+            ByteProgressChanged?.Invoke(sender, progress);
+        };
     }
+    
+    
 
-    public bool ValidateNickname(string nickname)
+    public static bool ValidateNickname(string nickname)
     {
         return Regex.IsMatch(nickname, @"^[A-Za-z0-9_]{3,16}$");
     }
@@ -89,4 +104,6 @@ public class Launcher
             ExtraGameArguments = extraGameArguments
         });
     }
+    
+    public bool IsEmptyConstructorUsed() => _isEmptyConstructorUsed;
 }

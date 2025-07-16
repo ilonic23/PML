@@ -1,21 +1,90 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:PmlUi.ViewModels"
+        xmlns:v="using:PmlUi.Views"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="PmlUi.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
-        Icon="/Assets/avalonia-logo.ico"
-        Title="PmlUi"
+        Icon="/Assets/logo.png"
+        Title="Phantom Launcher"
         Closing="MainWindowClosing">
 
     <Design.DataContext>
-        <!-- This only sets the DataContext for the previewer in an IDE,
-             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
         <vm:MainWindowViewModel/>
     </Design.DataContext>
+    
+    <Grid Background="{Binding Palette.Background}" ColumnDefinitions="50,*">
+        <Grid Grid.Column="0" Background="{Binding Palette.Foreground}"
+                    RowDefinitions="*,50">
+            <StackPanel Orientation="Vertical">
+                <Button x:Name="PlayPanelButton" Classes="sidePanelButton" Command="{Binding SetInstancesPanelCommand}">
+                    <Image Source="/Assets/play.png"/>
+                </Button>
+                <Button x:Name="AccountsPanelButton" Classes="sidePanelButton" Command="{Binding SetAccountsPanelCommand}">
+                    <Image Source="/Assets/account.png"/>
+                </Button>
+            </StackPanel>
+            <!-- <Button x:Name="SettingsPanelButton" Classes="sidePanelButton" Grid.Row="1"> -->
+            <!--     <Image Source="/Assets/settings.png"/> -->
+            <!-- </Button> -->
+        </Grid>
+        <Grid x:Name="InstancesPanel" Grid.Column="1" RowDefinitions="*,130">
+            <WrapPanel x:Name="InstancesDisplayPanel" Margin="10"/>
+            <Panel x:Name="InstanceManagementPanel" Grid.Row="1" 
+                   Background="{Binding Palette.SecondaryForeground}">
+                <WrapPanel>
+                    <Button x:Name="PlayButton" Classes="instanceEditionButton" Margin="4,2,4,2" Command="{Binding PlayButtonCommand}">
+                        <Image Source="/Assets/start.png"/>
+                    </Button>
+                </WrapPanel>
+                <StackPanel Height="30" Orientation="Horizontal" VerticalAlignment="Bottom"
+                            Background="{Binding Palette.Foreground}">
+                    <Button x:Name="AddInstanceButton" Classes="instancesEditPanelButton" Command="{Binding AddInstanceCommand}">
+                        <Image Source="/Assets/plus.png" Width="25" Height="25"/>
+                    </Button>
+                    <Button x:Name="RemoveInstanceButton" Classes="instancesEditPanelButton" Command="{Binding RemoveInstanceCommand}">
+                        <Image Source="/Assets/trash.png" Width="25" Height="25"/>
+                    </Button>
+                    <ProgressBar x:Name="InstallationProgress" Margin="10, 0,0,0"/>
+                </StackPanel>
+            </Panel>
+        </Grid>
+        <Grid x:Name="AccountsPanel" Grid.Column="1" ColumnDefinitions="*,*" RowDefinitions="*,*" IsVisible="False">
+            <Label Content="{Binding LocalText.Nickname}" HorizontalAlignment="Center" VerticalAlignment="Center" 
+                   FontSize="32"/>
+            <TextBox x:Name="NicknameBox" Grid.Row="0" Grid.Column = "1" 
+                     Watermark="{Binding LocalText.NicknameWatermark}" 
+                     Height="30" Margin="10"/>
+            <Button Grid.Row="1" Grid.ColumnSpan="2" Content="{Binding LocalText.GlobalText.Apply}"
+                    HorizontalAlignment="Stretch" VerticalAlignment="Center" MinHeight="100" Margin="10"
+                    VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
+                    Classes="standard" Command="{Binding NicknameApplyCommand}"/>
+        </Grid>
+    </Grid>
 
-    <TextBlock Text="{Binding Greeting}" HorizontalAlignment="Center" VerticalAlignment="Center" />
-
+    <Window.Styles>
+        <Style Selector="Button.sidePanelButton">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Width" Value="50"/>
+            <Setter Property="Height" Value="50"/>
+            <Setter Property="CornerRadius" Value="8"/>
+        </Style>
+        <Style Selector="Button.instancesEditPanelButton">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Width" Value="30"/>
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="CornerRadius" Value="8"/>
+        </Style>
+        <Style Selector="Button.instanceEditionButton">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Width" Value="96"/>
+            <Setter Property="Height" Value="96"/>
+        </Style>
+        <Style Selector="Button.standard">
+            <Setter Property="Background" Value="{Binding Palette.ButtonEnabled}"/>
+            <Setter Property="CornerRadius" Value="5"/>
+        </Style>
+    </Window.Styles>
 </Window>

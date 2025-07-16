@@ -1,0 +1,42 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:PmlUi.ViewModels"
+        mc:Ignorable="d" d:DesignWidth="350" d:DesignHeight="350"
+        x:Class="PmlUi.Views.AddInstanceWindow"
+        Title="Add Instance"
+        x:DataType="vm:AddInstanceWindowViewModel"
+        Width="350" Height="350">
+    
+    <Design.DataContext>
+        <vm:AddInstanceWindowViewModel/>
+    </Design.DataContext>
+    
+    <Window.DataContext>
+        <vm:AddInstanceWindowViewModel/>
+    </Window.DataContext>
+    
+    <Grid Background="{Binding Palette.Background}" ColumnDefinitions="*,*" RowDefinitions="*,*,*">
+        <Label Grid.Column="0" Grid.Row="0" Content="{Binding LocalText.Name}" 
+               VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        <TextBox x:Name="NameBox" Grid.Column="1" Grid.Row="0" Margin="10" Height="50" VerticalAlignment="Center" 
+                 Watermark="{Binding LocalText.NameWatermark}" 
+                 FontSize="12" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+        <Label Grid.Column="0" Grid.Row="1" Content="{Binding LocalText.Version}" 
+               VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        <ComboBox x:Name="VersionBox" Grid.Column="1" Grid.Row="1" Margin="10" 
+                  VerticalAlignment="Center" HorizontalAlignment="Stretch" PlaceholderText="{Binding LocalText.VersionWatermark}"/>
+        <Button Classes="standard" Grid.Column="0" Grid.Row="2" Content="{Binding LocalText.GlobalText.OK}" 
+               VerticalAlignment="Center" HorizontalAlignment="Center" Command="{Binding OkCommand}"/>
+        <Button Classes="standard" Grid.Column="1" Grid.Row="2" Content="{Binding LocalText.GlobalText.Cancel}"
+                VerticalAlignment="Center" HorizontalAlignment="Center" Command="{Binding CancelCommand}"/>
+    </Grid>
+    
+    <Window.Styles>
+        <Style Selector="Button.standard">
+            <Setter Property="Background" Value="{Binding Palette.ButtonEnabled}"/>
+            <Setter Property="CornerRadius" Value="5"/>
+        </Style>
+    </Window.Styles>
+</Window>

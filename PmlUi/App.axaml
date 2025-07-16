@@ -2,8 +2,15 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="PmlUi.App"
              xmlns:local="using:PmlUi"
-             RequestedThemeVariant="Default">
+             xmlns:vm="using:PmlUi.ViewModels"
+             xmlns:viewModels="clr-namespace:PmlUi.ViewModels"
+             RequestedThemeVariant="Dark"
+             x:DataType="viewModels:GlobalViewModel">
              <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+             
+             <Application.DataContext>
+                 <vm:GlobalViewModel/>
+             </Application.DataContext>
 
     <Application.DataTemplates>
         <local:ViewLocator/>
@@ -11,5 +18,10 @@
   
     <Application.Styles>
         <FluentTheme />
+        <Style Selector="Button.standard">
+            <Setter Property="Background" Value="{Binding Palette.ButtonEnabled}"/>
+            <Setter Property="CornerRadius" Value="5"/>
+        </Style>
+        <StyleInclude Source="/Views/InstanceDisplayer.axaml"/>
     </Application.Styles>
 </Application>

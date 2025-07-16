@@ -2,21 +2,32 @@ using Avalonia.Media;
 
 namespace PmlUi.Models;
 
-public struct Palette
+public class Palette
 {
-    public SolidColorBrush Background { get; }
-    public SolidColorBrush Foreground { get; }
+    public SolidColorBrush Background { get; set; }
+    public SolidColorBrush Foreground { get; set; }
+    public SolidColorBrush SecondaryForeground { get; set; }
     
-    public SolidColorBrush ButtonEnabled  { get; }
-    public SolidColorBrush ButtonDisabled { get; }
-    public SolidColorBrush ButtonPressed { get; }
-    public SolidColorBrush ButtonHovered { get; }
+    public SolidColorBrush ButtonEnabled  { get; set; }
+    public SolidColorBrush ButtonDisabled { get; set; }
+    public SolidColorBrush ButtonPressed { get; set; }
+    public SolidColorBrush ButtonHovered { get; set; }
+    
+    public SolidColorBrush PrimaryTextColor { get; set; }
+    public SolidColorBrush SecondaryTextColor { get; set; }
 
-    public SolidColorBrush Info { get; }
-    public SolidColorBrush Error { get; }
-    public SolidColorBrush Success { get; }
-    public SolidColorBrush Warning { get; }
     
-    public SolidColorBrush PrimaryTextColor { get; }
-    public SolidColorBrush SecondaryTextColor { get; }
+    // Generates a palette with standard colors used in Phantom Launhcer
+    public Palette()
+    {
+        Background = new SolidColorBrush(Color.FromRgb(46, 40, 45));
+        Foreground = new SolidColorBrush(Color.FromRgb(70, 60, 63));
+        SecondaryForeground = new SolidColorBrush(Color.FromRgb(55, 50, 53));
+        ButtonEnabled = new SolidColorBrush(Color.FromArgb(255,79, 97, 165));
+        ButtonDisabled = new SolidColorBrush(Color.FromRgb(46, 40, 45));
+        ButtonPressed = new SolidColorBrush(Color.FromRgb(40, 78, 131));
+        ButtonHovered = new SolidColorBrush(Color.FromRgb(75, 92, 155));
+        PrimaryTextColor = new SolidColorBrush(Color.FromRgb(255,255,255));
+        SecondaryTextColor = new SolidColorBrush(Color.FromRgb(0,0,0));
+    }
 }

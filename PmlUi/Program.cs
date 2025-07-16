@@ -13,6 +13,7 @@ sealed class Program
         LogWriter.WriteInfo("Starting PML UI");
         try
         {
+            Models.App.Initialize();
             BuildAvaloniaApp()
                 .StartWithClassicDesktopLifetime(args);
         }

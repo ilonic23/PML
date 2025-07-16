@@ -1,0 +1,20 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="using:PmlUi.Views">
+    <Design.PreviewWith>
+        <controls:InstanceDisplayer />
+    </Design.PreviewWith>
+
+    <Style Selector="controls|InstanceDisplayer">
+        <!-- Set Defaults -->
+        <Setter Property="Template">
+            <ControlTemplate>
+                    <Button Content="{TemplateBinding DisplayText}" Width="100" Height="100" 
+                            Background="{TemplateBinding Background}" CornerRadius="3"
+                            HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                            Command="{TemplateBinding OnPressCommand}"
+                            CommandParameter="{Binding RelativeSource={RelativeSource Self}}"/>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+</Styles>
