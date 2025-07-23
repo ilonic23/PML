@@ -1,0 +1,38 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="200"
+        Width="400" Height="200"
+        xmlns:vm="using:PmlUi.ViewModels"
+        x:Class="PmlUi.Views.MessageBox"
+        Title="MessageBox"
+        x:DataType="vm:MessageBoxViewModel" Opacity="1">
+    
+    <Design.DataContext>
+        <vm:MessageBoxViewModel/>
+    </Design.DataContext>
+    
+    <Window.DataContext>
+        <vm:MessageBoxViewModel/>
+    </Window.DataContext>
+    
+    <Grid x:Name="MainGrid" Background="{Binding Palette.Background}" ColumnDefinitions="*,*,*" RowDefinitions="*,40">
+        <TextBlock x:Name="Message" FontSize="16" Foreground="{Binding Palette.PrimaryTextColor}" Text="Hello!"
+                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                   Padding="10" Grid.ColumnSpan="3"/>
+        <Button x:Name="ButtonCenter" Classes="standard" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Center" Margin="0,0,0,5"
+                Content="{Binding GlobalText.OK}" Click="ButtonCenterPressed"/>
+        <Button x:Name="ButtonLeft" Classes="standard" Grid.Column="0" Grid.Row="1" HorizontalAlignment="Center" Margin="0,0,0,5"
+                Content="{Binding GlobalText.OK}" Click="ButtonLeftPressed"/>
+        <Button x:Name="ButtonRight" Classes="standard" Grid.Column="2" Grid.Row="1" HorizontalAlignment="Center" Margin="0,0,0,5"
+                Content="{Binding GlobalText.Cancel}" Click="ButtonRightPressed"/>
+    </Grid>
+    
+    <Window.Styles>
+        <Style Selector="Button.standard">
+            <Setter Property="Background" Value="{Binding Palette.ButtonEnabled}"/>
+            <Setter Property="CornerRadius" Value="5"/>
+        </Style>
+    </Window.Styles>
+</Window>

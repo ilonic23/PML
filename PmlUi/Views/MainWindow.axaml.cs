@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using Avalonia.Controls;
+using Avalonia.Interactivity;
 using Avalonia.Logging;
 using CommunityToolkit.Mvvm.Input;
 using PmlUi.Models;
@@ -35,6 +37,30 @@ public partial class MainWindow : Window
         CurrentInstance = null;
         NicknameBox.Text = Models.App.AppData.Nickname;
         LoadInstances();
+        if (Design.IsDesignMode) return;
+        Loaded += OnLoaded;
+    }
+
+    private async void OnLoaded(object? sender, RoutedEventArgs e)
+    {
+        await ProcessUpdates();
+    }
+
+    private async Task ProcessUpdates()
+    {
+        var context = (MainWindowViewModel)DataContext!;
+        if (Models.App.AppData.UpdateBranch is not "master" and not "dev")
+        {
+            BranchMessageBox bmb = new(context.LocalText.GlobalText.PleaseSelectABranch, context.LocalText.GlobalText.BranchSelection);
+            Models.App.AppData.UpdateBranch = await bmb.ShowDialog<string>(this);
+            return;
+        }
+        bool update = await Models.App.CheckUpdates();
+        if (update)
+        {
+            MessageBox mb = new(context.LocalText.GlobalText.UpdateDetectedMessage, context.LocalText.GlobalText.Update, MbButtons.Ok);
+            await mb.ShowDialog(this);
+        }
     }
 
     private void LoadInstances()

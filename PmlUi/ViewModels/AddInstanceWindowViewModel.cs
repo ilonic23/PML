@@ -17,7 +17,11 @@ public partial class AddInstanceWindowViewModel : ViewModelBase
     {
         string? name = AddInstanceWindow.CurrentWindow.NameBox.Text;
         object? version = AddInstanceWindow.CurrentWindow.VersionBox.SelectedItem;
-        if (name == null || version == null) return;
+        if (name == null || version == null)
+        {
+            MessageBox mb = new();
+            return;
+        }
         PhantomInstance result = new(name, version.ToString()!, Path.Combine(Models.App.InstancesPath, name));
         AddInstanceWindow.CurrentWindow.Close(result);
     }

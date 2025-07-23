@@ -33,7 +33,12 @@ public partial class MainWindowViewModel : ViewModelBase
             InstanceDisplayer? d =
                 MainWindow.Current.InstancesDisplayPanel.Children.OfType<InstanceDisplayer>().
                     FirstOrDefault(find => find.DisplayText == instance.Name);
-            if (d != null) return;
+            if (d != null)
+            {
+                MessageBox mb = new(LocalText.ThatInstanceAlreadyExists, LocalText.GlobalText.Error, MbButtons.Ok);
+                await mb.ShowDialog(mb);
+                return;
+            }
             try
             {
                 LogWriter.WriteInfo($"Writing metadata.toml to {instance.Path}/metadata.toml");
@@ -124,10 +129,14 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private void RemoveInstance()
+    private async void RemoveInstance()
     {
         InstanceDisplayer d = MainWindow.Current.InstancesDisplayPanel.Children.OfType<InstanceDisplayer>().
             First(find => find.DisplayText == MainWindow.Current.CurrentInstance);
+
+        MessageBox mb = new(LocalText.InstanceDeletionConfirmation, LocalText.GlobalText.Warning, MbButtons.YesNo);
+        var result = await mb.ShowDialog<MbResult>(MainWindow.Current);
+        if (result == MbResult.No) return;
         try
         {
             LogWriter.WriteWarning("Removing instance...");
@@ -158,7 +167,12 @@ public partial class MainWindowViewModel : ViewModelBase
     private void NicknameApply()
     {
         string? nickname = MainWindow.Current.NicknameBox.Text;
-        if (nickname == null || !Launcher.ValidateNickname(nickname)) return;
+        if (nickname == null || !Launcher.ValidateNickname(nickname))
+        {
+            MessageBox mb = new(LocalText.IncorrectNickname, LocalText.GlobalText.Error);
+            mb.ShowDialog(MainWindow.Current);
+            return;
+        }
         Models.App.AppData.Nickname = nickname;
     }
 }
