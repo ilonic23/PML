@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -11,6 +12,7 @@ using CommunityToolkit.Mvvm.Input;
 using PML;
 using PmlUi.Models;
 using PmlUi.Views;
+using Tmds.DBus.Protocol;
 using Tomlyn;
 
 namespace PmlUi.ViewModels;
@@ -112,8 +114,14 @@ public partial class MainWindowViewModel : ViewModelBase
             await d.Instance.InstallInstance();
             try
             {
+                if (!Launcher.ValidateNickname(Models.App.AppData.Nickname))
+                {
+                    SetAccountsPanel();
+                    MessageBox mb = new(LocalText.IncorrectNickname, LocalText.GlobalText.Error, MbButtons.Ok);
+                    await mb.ShowDialog(MainWindow.Current);
+                    return;
+                }
                 LogWriter.WriteInfo($"Starting instance...");
-                if (!Launcher.ValidateNickname(Models.App.AppData.Nickname)) return;
                 Process process = await d.Instance.BuildInstanceProcess(MSession.CreateOfflineSession(Models.App.AppData.Nickname));
                 process.Start();
             }

@@ -14,7 +14,7 @@ public class App
     public static string UpdatePath { get; private set; } = "https://raw.githubusercontent.com/ilonic23/PML/"; // BRANCH/path
     public static string InstancesPath { get; private set; }
 
-    public static string CurrentVersion { get; private set; } = "0.1A";
+    public static string CurrentVersion { get; private set; } = "0.2A";
     public static void Initialize()
     {
         if (_init) return;

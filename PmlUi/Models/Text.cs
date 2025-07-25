@@ -23,6 +23,8 @@ public class MainWindowText
     public string ThatInstanceAlreadyExists { get; set; } = "Instance already exists";
     public string IncorrectNickname { get; set; } = "Incorrect nickname";
     public string InstanceDeletionConfirmation { get; set; } = "Are you sure you want to delete this instance?";
+    public string ChangeUpdateBranch { get; set; } = "Select another update branch";
+    public string ResetSettings { get; set; } = "Reset settings";
 }
 
 public class AddInstanceWindowText
