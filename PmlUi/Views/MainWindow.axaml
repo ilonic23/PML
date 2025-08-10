@@ -64,7 +64,6 @@
                     Classes="standard" Command="{Binding NicknameApplyCommand}"/>
         </Grid>
         <Grid x:Name="SettingsPanel" Grid.Column="1" IsVisible="False">
-            <v:RippleButton Width="650" Height="450" Classes="standard"/>
             <StackPanel Margin="10" Orientation="Vertical">
                 <Button Classes="standard" Content="{Binding LocalText.ChangeUpdateBranch}" Width="250" Margin="5"
                         Command="{Binding ChangeUpdateBranchCommand}"/>
