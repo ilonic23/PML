@@ -25,6 +25,7 @@ public class MainWindowText
     public string InstanceDeletionConfirmation { get; set; } = "Are you sure you want to delete this instance?";
     public string ChangeUpdateBranch { get; set; } = "Select another update branch";
     public string ResetSettings { get; set; } = "Reset settings";
+    public string SettingsResetConfirmation { get; set; } = "Are you sure you want to reset settings to default?";
 }
 
 public class AddInstanceWindowText

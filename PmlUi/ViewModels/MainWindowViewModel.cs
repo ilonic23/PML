@@ -162,6 +162,7 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         MainWindow.Current.InstancesPanel.IsVisible = true;
         MainWindow.Current.AccountsPanel.IsVisible = false;
+        MainWindow.Current.SettingsPanel.IsVisible = false;
     }
     
     [RelayCommand]
@@ -169,6 +170,39 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         MainWindow.Current.InstancesPanel.IsVisible = false;
         MainWindow.Current.AccountsPanel.IsVisible = true;
+        MainWindow.Current.SettingsPanel.IsVisible = false;
+    }
+
+    [RelayCommand]
+    private void SetSettingsPanel()
+    {
+        MainWindow.Current.InstancesPanel.IsVisible = false;
+        MainWindow.Current.AccountsPanel.IsVisible = false;
+        MainWindow.Current.SettingsPanel.IsVisible = true;
+    }
+    
+    [RelayCommand]
+    private async Task ChangeUpdateBranch()
+    {
+        var mb = new BranchMessageBox(LocalText.GlobalText.PleaseSelectABranch, LocalText.GlobalText.BranchSelection); 
+        await mb.ShowDialog(MainWindow.Current);
+    }
+
+    [RelayCommand]
+    private async Task ResetSettings()
+    {
+        MessageBox mb = new(LocalText.SettingsResetConfirmation, LocalText.GlobalText.Warning, MbButtons.YesNo);
+        var result = await mb.ShowDialog<MbResult>(MainWindow.Current);
+        if (result == MbResult.No) return;
+        try
+        {
+            LogWriter.WriteWarning("Resetting settings...");
+            File.Delete(Path.Combine(Models.App.AppPath, "appdata.toml"));
+        }
+        catch (Exception ex)
+        {
+            LogWriter.WriteError($"Caught {ex.GetType().Name} when trying to reset settings: {ex.Message}");
+        }
     }
 
     [RelayCommand]

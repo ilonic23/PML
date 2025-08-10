@@ -26,11 +26,12 @@
                     <Image Source="/Assets/account.png"/>
                 </Button>
             </StackPanel>
-            <Button x:Name="SettingsPanelButton" Classes="sidePanelButton" Grid.Row="1">
+            <Button x:Name="SettingsPanelButton" Classes="sidePanelButton" Grid.Row="1" Command="{Binding SetSettingsPanelCommand}">
                 <Image Source="/Assets/settings.png"/>
             </Button>
         </Grid>
-        <Grid x:Name="InstancesPanel" Grid.Column="1" RowDefinitions="*,130" IsVisible="False">
+        <Grid x:Name="InstancesPanel" Grid.Column="1" RowDefinitions="*,130">
+            
             <WrapPanel x:Name="InstancesDisplayPanel" Margin="10"/>
             <Panel x:Name="InstanceManagementPanel" Grid.Row="1" 
                    Background="{Binding Palette.SecondaryForeground}">
@@ -62,12 +63,13 @@
                     VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
                     Classes="standard" Command="{Binding NicknameApplyCommand}"/>
         </Grid>
-        <Grid x:Name="SettingsPanel" Grid.Column="1">
+        <Grid x:Name="SettingsPanel" Grid.Column="1" IsVisible="False">
+            <v:RippleButton Width="650" Height="450" Classes="standard"/>
             <StackPanel Margin="10" Orientation="Vertical">
                 <Button Classes="standard" Content="{Binding LocalText.ChangeUpdateBranch}" Width="250" Margin="5"
-                        />
+                        Command="{Binding ChangeUpdateBranchCommand}"/>
                 <Button Classes="standard" Content="{Binding LocalText.ResetSettings}" Width="250" Margin="5"
-                        />
+                        Command="{Binding ResetSettingsCommand}"/>
             </StackPanel>
         </Grid>
     </Grid>
