@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Tomlyn;
 
@@ -10,8 +11,10 @@ public class App
     private static bool _init = false;
     public static AppData AppData { get; set; }
     public static string AppPath { get; private set; }
-    
+    public static string UpdatePath { get; private set; } = "https://raw.githubusercontent.com/ilonic23/PML/"; // BRANCH/path
     public static string InstancesPath { get; private set; }
+
+    public static string CurrentVersion { get; private set; } = "0.2A";
     public static void Initialize()
     {
         if (_init) return;
@@ -28,7 +31,12 @@ public class App
                 {
                     LogWriter.WriteInfo($"Reading app data from {appdataPath}");
                     string file = reader.ReadToEnd();
-                    AppData = Toml.ToModel<AppData>(file);
+                    var options = new TomlModelOptions()
+                    {
+                        IgnoreMissingProperties = true,
+                        
+                    };
+                    AppData = Toml.ToModel<AppData>(file, options: options);
                 }
             }
             catch (Exception ex)
@@ -81,5 +89,24 @@ public class App
         {
             LogWriter.WriteError($"Caught {ex.GetType().Name} when trying to write to \"{AppPath}/appdata.toml\": {ex.Message}");
         }
+    }
+
+    public static async Task<bool> CheckUpdates(string branch = "master")
+    {
+        LogWriter.WriteInfo($"Fetching updates for {branch} branch...");
+        try
+        {
+            using (HttpClient client = new())
+            {
+                client.BaseAddress = new Uri($"{UpdatePath}{AppData.UpdateBranch}/version");
+                string get = await client.GetStringAsync(client.BaseAddress);
+                if (get != CurrentVersion) return true;
+            }
+        }
+        catch (Exception ex)
+        {
+            LogWriter.WriteInfo($"Caught {ex.GetType().Name} when trying to fetch updates for {branch} branch: {ex.Message}");
+        }
+        return false;
     }
 }

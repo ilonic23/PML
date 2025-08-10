@@ -26,11 +26,12 @@
                     <Image Source="/Assets/account.png"/>
                 </Button>
             </StackPanel>
-            <!-- <Button x:Name="SettingsPanelButton" Classes="sidePanelButton" Grid.Row="1"> -->
-            <!--     <Image Source="/Assets/settings.png"/> -->
-            <!-- </Button> -->
+            <Button x:Name="SettingsPanelButton" Classes="sidePanelButton" Grid.Row="1" Command="{Binding SetSettingsPanelCommand}">
+                <Image Source="/Assets/settings.png"/>
+            </Button>
         </Grid>
         <Grid x:Name="InstancesPanel" Grid.Column="1" RowDefinitions="*,130">
+            
             <WrapPanel x:Name="InstancesDisplayPanel" Margin="10"/>
             <Panel x:Name="InstanceManagementPanel" Grid.Row="1" 
                    Background="{Binding Palette.SecondaryForeground}">
@@ -52,15 +53,23 @@
             </Panel>
         </Grid>
         <Grid x:Name="AccountsPanel" Grid.Column="1" ColumnDefinitions="*,*" RowDefinitions="*,*" IsVisible="False">
-            <Label Content="{Binding LocalText.Nickname}" HorizontalAlignment="Center" VerticalAlignment="Center" 
+            <Label Grid.ColumnSpan="2" Content="{Binding LocalText.Nickname}" HorizontalAlignment="Center" VerticalAlignment="Center" 
                    FontSize="32"/>
-            <TextBox x:Name="NicknameBox" Grid.Row="0" Grid.Column = "1" 
+            <TextBox x:Name="NicknameBox" Grid.Row="1" Grid.Column = "0"
                      Watermark="{Binding LocalText.NicknameWatermark}" 
                      Height="30" Margin="10"/>
-            <Button Grid.Row="1" Grid.ColumnSpan="2" Content="{Binding LocalText.GlobalText.Apply}"
-                    HorizontalAlignment="Stretch" VerticalAlignment="Center" MinHeight="100" Margin="10"
+            <Button Grid.Row="1" Grid.Column="1" Content="{Binding LocalText.GlobalText.Apply}"
+                    HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="10"
                     VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
                     Classes="standard" Command="{Binding NicknameApplyCommand}"/>
+        </Grid>
+        <Grid x:Name="SettingsPanel" Grid.Column="1" IsVisible="False">
+            <StackPanel Margin="10" Orientation="Vertical">
+                <Button Classes="standard" Content="{Binding LocalText.ChangeUpdateBranch}" Width="250" Margin="5"
+                        Command="{Binding ChangeUpdateBranchCommand}"/>
+                <Button Classes="standard" Content="{Binding LocalText.ResetSettings}" Width="250" Margin="5"
+                        Command="{Binding ResetSettingsCommand}"/>
+            </StackPanel>
         </Grid>
     </Grid>
 
@@ -85,6 +94,7 @@
         <Style Selector="Button.standard">
             <Setter Property="Background" Value="{Binding Palette.ButtonEnabled}"/>
             <Setter Property="CornerRadius" Value="5"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
         </Style>
     </Window.Styles>
 </Window>

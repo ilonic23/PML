@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -11,6 +12,7 @@ using CommunityToolkit.Mvvm.Input;
 using PML;
 using PmlUi.Models;
 using PmlUi.Views;
+using Tmds.DBus.Protocol;
 using Tomlyn;
 
 namespace PmlUi.ViewModels;
@@ -33,7 +35,12 @@ public partial class MainWindowViewModel : ViewModelBase
             InstanceDisplayer? d =
                 MainWindow.Current.InstancesDisplayPanel.Children.OfType<InstanceDisplayer>().
                     FirstOrDefault(find => find.DisplayText == instance.Name);
-            if (d != null) return;
+            if (d != null)
+            {
+                MessageBox mb = new(LocalText.ThatInstanceAlreadyExists, LocalText.GlobalText.Error, MbButtons.Ok);
+                await mb.ShowDialog(mb);
+                return;
+            }
             try
             {
                 LogWriter.WriteInfo($"Writing metadata.toml to {instance.Path}/metadata.toml");
@@ -107,8 +114,14 @@ public partial class MainWindowViewModel : ViewModelBase
             await d.Instance.InstallInstance();
             try
             {
+                if (!Launcher.ValidateNickname(Models.App.AppData.Nickname))
+                {
+                    SetAccountsPanel();
+                    MessageBox mb = new(LocalText.IncorrectNickname, LocalText.GlobalText.Error, MbButtons.Ok);
+                    await mb.ShowDialog(MainWindow.Current);
+                    return;
+                }
                 LogWriter.WriteInfo($"Starting instance...");
-                if (!Launcher.ValidateNickname(Models.App.AppData.Nickname)) return;
                 Process process = await d.Instance.BuildInstanceProcess(MSession.CreateOfflineSession(Models.App.AppData.Nickname));
                 process.Start();
             }
@@ -124,10 +137,14 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private void RemoveInstance()
+    private async void RemoveInstance()
     {
         InstanceDisplayer d = MainWindow.Current.InstancesDisplayPanel.Children.OfType<InstanceDisplayer>().
             First(find => find.DisplayText == MainWindow.Current.CurrentInstance);
+
+        MessageBox mb = new(LocalText.InstanceDeletionConfirmation, LocalText.GlobalText.Warning, MbButtons.YesNo);
+        var result = await mb.ShowDialog<MbResult>(MainWindow.Current);
+        if (result == MbResult.No) return;
         try
         {
             LogWriter.WriteWarning("Removing instance...");
@@ -145,6 +162,7 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         MainWindow.Current.InstancesPanel.IsVisible = true;
         MainWindow.Current.AccountsPanel.IsVisible = false;
+        MainWindow.Current.SettingsPanel.IsVisible = false;
     }
     
     [RelayCommand]
@@ -152,13 +170,51 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         MainWindow.Current.InstancesPanel.IsVisible = false;
         MainWindow.Current.AccountsPanel.IsVisible = true;
+        MainWindow.Current.SettingsPanel.IsVisible = false;
+    }
+
+    [RelayCommand]
+    private void SetSettingsPanel()
+    {
+        MainWindow.Current.InstancesPanel.IsVisible = false;
+        MainWindow.Current.AccountsPanel.IsVisible = false;
+        MainWindow.Current.SettingsPanel.IsVisible = true;
+    }
+    
+    [RelayCommand]
+    private async Task ChangeUpdateBranch()
+    {
+        var mb = new BranchMessageBox(LocalText.GlobalText.PleaseSelectABranch, LocalText.GlobalText.BranchSelection); 
+        await mb.ShowDialog(MainWindow.Current);
+    }
+
+    [RelayCommand]
+    private async Task ResetSettings()
+    {
+        MessageBox mb = new(LocalText.SettingsResetConfirmation, LocalText.GlobalText.Warning, MbButtons.YesNo);
+        var result = await mb.ShowDialog<MbResult>(MainWindow.Current);
+        if (result == MbResult.No) return;
+        try
+        {
+            LogWriter.WriteWarning("Resetting settings...");
+            File.Delete(Path.Combine(Models.App.AppPath, "appdata.toml"));
+        }
+        catch (Exception ex)
+        {
+            LogWriter.WriteError($"Caught {ex.GetType().Name} when trying to reset settings: {ex.Message}");
+        }
     }
 
     [RelayCommand]
     private void NicknameApply()
     {
         string? nickname = MainWindow.Current.NicknameBox.Text;
-        if (nickname == null || !Launcher.ValidateNickname(nickname)) return;
+        if (nickname == null || !Launcher.ValidateNickname(nickname))
+        {
+            MessageBox mb = new(LocalText.IncorrectNickname, LocalText.GlobalText.Error);
+            mb.ShowDialog(MainWindow.Current);
+            return;
+        }
         Models.App.AppData.Nickname = nickname;
     }
 }
