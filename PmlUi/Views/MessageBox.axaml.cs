@@ -1,16 +1,13 @@
 using System;
-using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Data;
 using Avalonia.Interactivity;
-using Avalonia.Markup.Xaml;
 using PmlUi.ViewModels;
 
 namespace PmlUi.Views;
 
 public partial class MessageBox : Window
 {
-    private MbButtons _buttons;
+    private readonly MbButtons _buttons;
     
     public MessageBox()
     {
@@ -27,12 +24,12 @@ public partial class MessageBox : Window
         switch (_buttons)
         {
             case MbButtons.Ok:
-                ButtonCenter.Content = dataContext.GlobalText.OK;
+                ButtonCenter.Content = dataContext.GlobalText.Ok;
                 ButtonLeft.IsVisible = false;
                 ButtonRight.IsVisible = false;
                 break;
             case MbButtons.OkCancel:
-                ButtonLeft.Content = dataContext.GlobalText.OK;
+                ButtonLeft.Content = dataContext.GlobalText.Ok;
                 ButtonRight.Content = dataContext.GlobalText.Cancel;
                 ButtonCenter.IsVisible = false;
                 break;
@@ -72,8 +69,6 @@ public partial class MessageBox : Window
                 Close(MbResult.Ok);
                 break;
             case MbButtons.YesNo:
-                Close(MbResult.Yes);
-                break;
             case MbButtons.YesNoCancel:
                 Close(MbResult.Yes);
                 break;
@@ -106,7 +101,7 @@ public enum MbButtons
     Ok,
     OkCancel,
     YesNo,
-    YesNoCancel,
+    YesNoCancel
 }
 
 public enum MbResult
@@ -114,5 +109,5 @@ public enum MbResult
     Ok,
     Cancel,
     Yes,
-    No,
+    No
 }

@@ -1,6 +1,6 @@
 using Avalonia;
-using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
+using Avalonia.Media;
 using CommunityToolkit.Mvvm.Input;
 using PmlUi.Models;
 
@@ -16,6 +16,8 @@ public class InstanceDisplayer : TemplatedControl
     
     public static readonly StyledProperty<PhantomInstance> InstanceProperty =
         AvaloniaProperty.Register<InstanceDisplayer, PhantomInstance>(nameof(Instance));
+
+    private bool _selected = false;
 
     public string DisplayText
     {
@@ -33,5 +35,12 @@ public class InstanceDisplayer : TemplatedControl
     {
         get => GetValue(InstanceProperty);
         set => SetValue(InstanceProperty, value);
+    }
+
+    public void ToggleSelected()
+    {
+        if (_selected) Background = Brushes.Transparent;
+        else Background = new SolidColorBrush(Color.FromArgb(50, 255, 255, 255));
+        _selected = !_selected;
     }
 }

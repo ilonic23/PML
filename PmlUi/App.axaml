@@ -4,7 +4,6 @@
              xmlns:local="using:PmlUi"
              xmlns:vm="using:PmlUi.ViewModels"
              xmlns:viewModels="clr-namespace:PmlUi.ViewModels"
-             xmlns:views="clr-namespace:PmlUi.Views"
              RequestedThemeVariant="Dark"
              x:DataType="viewModels:GlobalViewModel">
              <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->

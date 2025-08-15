@@ -6,19 +6,16 @@ using Tomlyn;
 
 namespace PmlUi.Models;
 
-public class App
+public static class App
 {
-    private static bool _init = false;
     public static AppData AppData { get; set; }
     public static string AppPath { get; private set; }
-    public static string UpdatePath { get; private set; } = "https://raw.githubusercontent.com/ilonic23/PML/"; // BRANCH/path
+    private static string UpdatePath => "https://raw.githubusercontent.com/ilonic23/PML/"; // BRANCH/path
     public static string InstancesPath { get; private set; }
+    private static string CurrentVersion => "0.3A";
 
-    public static string CurrentVersion { get; private set; } = "0.2A";
-    public static void Initialize()
+    static App()
     {
-        if (_init) return;
-        _init = true;
         // Read appdata
         AppPath = AppDomain.CurrentDomain.BaseDirectory;
         InstancesPath = Path.Combine(AppPath, "Instances");
@@ -27,17 +24,14 @@ public class App
         {
             try
             {
-                using (StreamReader reader = new StreamReader(appdataPath))
+                using StreamReader reader = new StreamReader(appdataPath);
+                LogWriter.WriteInfo($"Reading app data from {appdataPath}");
+                string file = reader.ReadToEnd();
+                var options = new TomlModelOptions()
                 {
-                    LogWriter.WriteInfo($"Reading app data from {appdataPath}");
-                    string file = reader.ReadToEnd();
-                    var options = new TomlModelOptions()
-                    {
-                        IgnoreMissingProperties = true,
-                        
-                    };
-                    AppData = Toml.ToModel<AppData>(file, options: options);
-                }
+                    IgnoreMissingProperties = true
+                };
+                AppData = Toml.ToModel<AppData>(file, options: options);
             }
             catch (Exception ex)
             {
@@ -51,7 +45,7 @@ public class App
 
     private static void InitiateAsNew()
     {
-        AppData = new();
+        AppData = new AppData();
         try
         {
             if (Directory.Exists($"{AppPath}Instances"))
@@ -64,7 +58,7 @@ public class App
         }
     }
 
-    public static string GetAppDataToml()
+    private static string GetAppDataToml()
     {
         return Toml.FromModel(AppData);
     }
@@ -78,12 +72,11 @@ public class App
                 File.Delete($"{AppPath}/appdata.toml");
                 File.Create($"{AppPath}/appdata.toml").Close();
             }
-            using (StreamWriter writer = new StreamWriter($"{AppPath}/appdata.toml"))
-            {
-                string toml = GetAppDataToml();
-                writer.Write(toml);
-                writer.Flush();
-            }
+
+            using StreamWriter writer = new StreamWriter($"{AppPath}/appdata.toml");
+            string toml = GetAppDataToml();
+            writer.Write(toml);
+            writer.Flush();
         }
         catch (Exception ex)
         {
@@ -96,12 +89,10 @@ public class App
         LogWriter.WriteInfo($"Fetching updates for {branch} branch...");
         try
         {
-            using (HttpClient client = new())
-            {
-                client.BaseAddress = new Uri($"{UpdatePath}{AppData.UpdateBranch}/version");
-                string get = await client.GetStringAsync(client.BaseAddress);
-                if (get != CurrentVersion) return true;
-            }
+            using HttpClient client = new();
+            client.BaseAddress = new Uri($"{UpdatePath}{AppData.UpdateBranch}/version");
+            string get = await client.GetStringAsync(client.BaseAddress);
+            if (get != CurrentVersion) return true;
         }
         catch (Exception ex)
         {

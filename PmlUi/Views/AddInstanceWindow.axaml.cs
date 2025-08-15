@@ -1,17 +1,12 @@
 using System.Threading.Tasks;
-using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
 using PmlUi.Models;
-using PmlUi.ViewModels;
 
 namespace PmlUi.Views;
 
 public partial class AddInstanceWindow : Window
 {
-    public bool ButtonPressed = false;
     public static AddInstanceWindow CurrentWindow { get; private set; }
-    public PhantomInstance Result { get; private set; }
 
         
     public AddInstanceWindow()
@@ -19,7 +14,7 @@ public partial class AddInstanceWindow : Window
         InitializeComponent();
         if (Design.IsDesignMode) return;
         CurrentWindow = this;
-        AddVersionsAsync();
+        _ = AddVersionsAsync();
     }
     
 

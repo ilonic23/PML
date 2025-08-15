@@ -2,7 +2,7 @@ namespace PmlUi.Models;
 
 public class GlobalText
 {
-    public string OK { get; set; } = "OK";
+    public string Ok { get; set; } = "OK";
     public string Cancel { get; set; } = "Cancel";
     public string Apply { get; set; } = "Apply";
     public string Yes { get; set; } = "Yes";

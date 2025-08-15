@@ -27,7 +27,7 @@
                VerticalAlignment="Center" HorizontalAlignment="Center"/>
         <ComboBox x:Name="VersionBox" Grid.Column="1" Grid.Row="1" Margin="10" 
                   VerticalAlignment="Center" HorizontalAlignment="Stretch" PlaceholderText="{Binding LocalText.VersionWatermark}"/>
-        <Button Classes="standard" Grid.Column="0" Grid.Row="2" Content="{Binding LocalText.GlobalText.OK}" 
+        <Button Classes="standard" Grid.Column="0" Grid.Row="2" Content="{Binding LocalText.GlobalText.Ok}" 
                VerticalAlignment="Center" HorizontalAlignment="Center" Command="{Binding OkCommand}"/>
         <Button Classes="standard" Grid.Column="1" Grid.Row="2" Content="{Binding LocalText.GlobalText.Cancel}"
                 VerticalAlignment="Center" HorizontalAlignment="Center" Command="{Binding CancelCommand}"/>

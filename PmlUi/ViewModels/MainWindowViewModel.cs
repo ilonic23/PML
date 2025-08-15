@@ -1,18 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows.Input;
 using Avalonia.Controls;
-using Avalonia.Media;
+using CmlLib.Core;
 using CmlLib.Core.Auth;
 using CommunityToolkit.Mvvm.Input;
 using PML;
 using PmlUi.Models;
 using PmlUi.Views;
-using Tmds.DBus.Protocol;
 using Tomlyn;
 
 namespace PmlUi.ViewModels;
@@ -23,31 +20,29 @@ public partial class MainWindowViewModel : ViewModelBase
     public MainWindowText LocalText { get; } = new();
     
     [RelayCommand]
-    private async void AddInstance()
+    private async Task AddInstance()
     {
         if (Design.IsDesignMode) return;
         try
         {
             LogWriter.WriteInfo($"Create new instance of {nameof(AddInstanceWindow)}");
             AddInstanceWindow window = new();
-            PhantomInstance? instance = await window.ShowDialog<PhantomInstance?>(MainWindow.Current);
+            var instance = await window.ShowDialog<PhantomInstance?>(MainWindow.Current);
             if (instance == null) return;
-            InstanceDisplayer? d =
+            var d =
                 MainWindow.Current.InstancesDisplayPanel.Children.OfType<InstanceDisplayer>().
                     FirstOrDefault(find => find.DisplayText == instance.Name);
             if (d != null)
             {
-                MessageBox mb = new(LocalText.ThatInstanceAlreadyExists, LocalText.GlobalText.Error, MbButtons.Ok);
+                MessageBox mb = new(LocalText.ThatInstanceAlreadyExists, LocalText.GlobalText.Error);
                 await mb.ShowDialog(mb);
                 return;
             }
             try
             {
                 LogWriter.WriteInfo($"Writing metadata.toml to {instance.Path}/metadata.toml");
-                await using (StreamWriter writer = File.CreateText(Path.Combine(instance.Path, "metadata.toml")))
-                {
-                    await writer.WriteAsync(Toml.FromModel(instance));
-                }
+                await using StreamWriter writer = File.CreateText(Path.Combine(instance.Path, "metadata.toml"));
+                await writer.WriteAsync(Toml.FromModel(instance));
             }
             catch (Exception ex)
             {
@@ -70,32 +65,26 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private void InstanceDisplayerPress(object? sender)
+    private static void InstanceDisplayerPress(object? sender)
     {
-        var btn = sender as Button;
-        if (sender != null && btn != null)
+        if (sender is not Button btn) return;
+        InstanceDisplayer displayer;
+        if (MainWindow.Current.CurrentInstance == null)
         {
-            InstanceDisplayer d;
-            Color color;
-            if (MainWindow.Current.CurrentInstance == null)
-            {
-                MainWindow.Current.CurrentInstance = btn.Content!.ToString()!;
-                d = MainWindow.Current.InstancesDisplayPanel.Children.OfType<InstanceDisplayer>().
-                    First(find => find.DisplayText == MainWindow.Current.CurrentInstance);
-                color = Color.FromArgb(50, 255,255,255);
-                d.Background = new SolidColorBrush(color);
-                return;
-            }
-            d = MainWindow.Current.InstancesDisplayPanel.Children.OfType<InstanceDisplayer>().
-                    First(find => find.DisplayText == MainWindow.Current.CurrentInstance);
-            d.Background = Brushes.Transparent;
-            
             MainWindow.Current.CurrentInstance = btn.Content!.ToString()!;
-            d = MainWindow.Current.InstancesDisplayPanel.Children.OfType<InstanceDisplayer>().
-                    First(find => find.DisplayText == MainWindow.Current.CurrentInstance);
-            color = Color.FromArgb(50, 255,255,255);
-            d.Background = new SolidColorBrush(color);
+            displayer = (btn.Parent as InstanceDisplayer)!;
+            displayer.ToggleSelected();
+            return;
         }
+            
+            
+        displayer = (btn.Parent as InstanceDisplayer)!;
+        displayer.ToggleSelected();
+            
+        MainWindow.Current.CurrentInstance = btn.Content!.ToString()!;
+        displayer = MainWindow.Current.InstancesDisplayPanel.Children.OfType<InstanceDisplayer>().
+            First(find => find.DisplayText == MainWindow.Current.CurrentInstance);
+        displayer.ToggleSelected();
     }
 
     [RelayCommand]
@@ -106,23 +95,25 @@ public partial class MainWindowViewModel : ViewModelBase
         try
         {
             LogWriter.WriteInfo("Installing instance...");
-            d.Instance.Launcher.ByteProgressChanged += (sender, progress) =>
-            {
-                MainWindow.Current.InstallationProgress.Maximum = progress.TotalBytes / (1024.0 * 1024);
-                MainWindow.Current.InstallationProgress.Value = progress.ProgressedBytes / (1024.0 * 1024);
-            };
+            
+            void ProcessByteProgress(object? sender, ByteProgress progress) =>
+                MainWindow.Current.InstallationProgress.Value = progress.ProgressedBytes / (double)progress.TotalBytes * 100;
+            
+            d.Instance.Launcher.ByteProgressChanged += ProcessByteProgress;
+            
             await d.Instance.InstallInstance();
+            d.Instance.Launcher.ByteProgressChanged -= ProcessByteProgress;
             try
             {
                 if (!Launcher.ValidateNickname(Models.App.AppData.Nickname))
                 {
                     SetAccountsPanel();
-                    MessageBox mb = new(LocalText.IncorrectNickname, LocalText.GlobalText.Error, MbButtons.Ok);
+                    MessageBox mb = new(LocalText.IncorrectNickname, LocalText.GlobalText.Error);
                     await mb.ShowDialog(MainWindow.Current);
                     return;
                 }
                 LogWriter.WriteInfo($"Starting instance...");
-                Process process = await d.Instance.BuildInstanceProcess(MSession.CreateOfflineSession(Models.App.AppData.Nickname));
+                var process = await d.Instance.BuildInstanceProcess(MSession.CreateOfflineSession(Models.App.AppData.Nickname));
                 process.Start();
             }
             catch (Exception ex)
@@ -137,9 +128,9 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private async void RemoveInstance()
+    private async Task RemoveInstance()
     {
-        InstanceDisplayer d = MainWindow.Current.InstancesDisplayPanel.Children.OfType<InstanceDisplayer>().
+        var d = MainWindow.Current.InstancesDisplayPanel.Children.OfType<InstanceDisplayer>().
             First(find => find.DisplayText == MainWindow.Current.CurrentInstance);
 
         MessageBox mb = new(LocalText.InstanceDeletionConfirmation, LocalText.GlobalText.Warning, MbButtons.YesNo);
@@ -150,6 +141,7 @@ public partial class MainWindowViewModel : ViewModelBase
             LogWriter.WriteWarning("Removing instance...");
             Directory.Delete(d.Instance.Path, true);
             MainWindow.Current.InstancesDisplayPanel.Children.Remove(d);
+            MainWindow.Current.CurrentInstance = null;
         }
         catch (Exception ex)
         {
@@ -158,7 +150,7 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private void SetInstancesPanel()
+    private static void SetInstancesPanel()
     {
         MainWindow.Current.InstancesPanel.IsVisible = true;
         MainWindow.Current.AccountsPanel.IsVisible = false;
@@ -166,7 +158,7 @@ public partial class MainWindowViewModel : ViewModelBase
     }
     
     [RelayCommand]
-    private void SetAccountsPanel()
+    private static void SetAccountsPanel()
     {
         MainWindow.Current.InstancesPanel.IsVisible = false;
         MainWindow.Current.AccountsPanel.IsVisible = true;
@@ -174,7 +166,7 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private void SetSettingsPanel()
+    private static void SetSettingsPanel()
     {
         MainWindow.Current.InstancesPanel.IsVisible = false;
         MainWindow.Current.AccountsPanel.IsVisible = false;

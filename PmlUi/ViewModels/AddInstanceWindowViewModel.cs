@@ -13,21 +13,17 @@ public partial class AddInstanceWindowViewModel : ViewModelBase
     public AddInstanceWindowText LocalText { get; } = new();
 
     [RelayCommand]
-    private void Ok()
+    private static void Ok()
     {
         string? name = AddInstanceWindow.CurrentWindow.NameBox.Text;
         object? version = AddInstanceWindow.CurrentWindow.VersionBox.SelectedItem;
-        if (name == null || version == null)
-        {
-            MessageBox mb = new();
-            return;
-        }
+        if (name == null || version == null) return;
         PhantomInstance result = new(name, version.ToString()!, Path.Combine(Models.App.InstancesPath, name));
         AddInstanceWindow.CurrentWindow.Close(result);
     }
 
     [RelayCommand]
-    private void Cancel()
+    private static void Cancel()
     {
         AddInstanceWindow.CurrentWindow.Close(null);
     }

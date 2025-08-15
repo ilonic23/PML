@@ -1,11 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Avalonia.Logging;
-using CommunityToolkit.Mvvm.Input;
 using PmlUi.Models;
 using PmlUi.ViewModels;
 using Tomlyn;
@@ -15,19 +12,8 @@ namespace PmlUi.Views;
 public partial class MainWindow : Window
 {
     public static MainWindow Current { get; private set; }
-    private string _currentInstance;
-    
-    public string? CurrentInstance
-    {
-        get
-        {
-            return _currentInstance;
-        }
-        set
-        {
-            _currentInstance = value;
-        }
-    }
+
+    public string? CurrentInstance { get; set; }
     
     public MainWindow()
     {
@@ -58,7 +44,7 @@ public partial class MainWindow : Window
         bool update = await Models.App.CheckUpdates();
         if (update)
         {
-            MessageBox mb = new(context.LocalText.GlobalText.UpdateDetectedMessage, context.LocalText.GlobalText.Update, MbButtons.Ok);
+            MessageBox mb = new(context.LocalText.GlobalText.UpdateDetectedMessage, context.LocalText.GlobalText.Update);
             await mb.ShowDialog(this);
         }
     }
@@ -69,27 +55,25 @@ public partial class MainWindow : Window
         {
             foreach ( string dir in Directory.GetDirectories(Models.App.InstancesPath) )
             {
-                if ( File.Exists( Path.Combine(dir, "metadata.toml") ) )
+                if (!File.Exists(Path.Combine(dir, "metadata.toml"))) continue;
+                LogWriter.WriteInfo("Loading metadata.toml");
+                try
                 {
-                    LogWriter.WriteInfo("Loading metadata.toml");
-                    try
-                    {
-                        MainWindowViewModel vm = (DataContext as MainWindowViewModel)!;
-                        string file = File.ReadAllText(Path.Combine(dir, "metadata.toml"));
-                        PhantomInstance instance = Toml.ToModel<PhantomInstance>(file);
+                    var vm = (DataContext as MainWindowViewModel)!;
+                    string file = File.ReadAllText(Path.Combine(dir, "metadata.toml"));
+                    var instance = Toml.ToModel<PhantomInstance>(file);
                         
-                        InstanceDisplayer displayer = new()
-                        {
-                            DisplayText = instance.Name,
-                            OnPressCommand = vm.InstanceDisplayerPressCommand,
-                            Instance = instance
-                        };
-                        InstancesDisplayPanel.Children.Add(displayer);
-                    }
-                    catch (Exception ex)
+                    InstanceDisplayer displayer = new()
                     {
-                        LogWriter.WriteError($"Caught {ex.GetType().Name} when trying to load an instance: {ex.Message}");
-                    }
+                        DisplayText = instance.Name,
+                        OnPressCommand = vm.InstanceDisplayerPressCommand,
+                        Instance = instance
+                    };
+                    InstancesDisplayPanel.Children.Add(displayer);
+                }
+                catch (Exception ex)
+                {
+                    LogWriter.WriteError($"Caught {ex.GetType().Name} when trying to load an instance: {ex.Message}");
                 }
             }
         }

@@ -5,7 +5,7 @@ using PmlUi.Models;
 
 namespace PmlUi;
 
-sealed class Program
+static class Program
 {
     [STAThread]
     public static void Main(string[] args)
@@ -13,7 +13,6 @@ sealed class Program
         LogWriter.WriteInfo("Starting PML UI");
         try
         {
-            Models.App.Initialize();
             BuildAvaloniaApp()
                 .StartWithClassicDesktopLifetime(args);
         }

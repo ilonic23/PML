@@ -22,7 +22,7 @@
                    Padding="10" Grid.ColumnSpan="3"/>
         <ComboBox x:Name="BranchBox" Grid.Row="1" Margin="20,20,20,20" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
         <Button Grid.Row="2" Classes="standard" Margin="20,5,20,5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                Content="{Binding GlobalText.OK}"
+                Content="{Binding GlobalText.Ok}"
                 HorizontalContentAlignment="Center" Click="OkButtonPress"/>
     </Grid>
     
