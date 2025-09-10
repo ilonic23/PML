@@ -1,0 +1,19 @@
+# Default ignored files
+/shelf/
+/workspace.xml
+# Rider ignored files
+/.idea.PML.iml
+/modules.xml
+/projectSettingsUpdater.xml
+/contentModel.xml
+# Editor-based HTTP Client requests
+/httpRequests/
+# Datasource local storage ignored files
+/dataSources/
+/dataSources.local.xml
+#ignore bin folders
+../../PML/bin
+../../PmlUi/bin
+#ignore obj folders
+../../PML/obj
+../../PmlUi/obj

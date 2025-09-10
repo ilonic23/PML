@@ -30,8 +30,7 @@
             </Button>
         </Grid>
         <Grid x:Name="InstancesPanel" Grid.Column="1" RowDefinitions="*,130">
-            
-            <WrapPanel x:Name="InstancesDisplayPanel" Margin="10"/>
+            <ScrollViewer><WrapPanel x:Name="InstancesDisplayPanel" Margin="10"/></ScrollViewer>
             <Panel x:Name="InstanceManagementPanel" Grid.Row="1" 
                    Background="{Binding Palette.SecondaryForeground}">
                 <WrapPanel>

@@ -76,8 +76,7 @@ public partial class MainWindowViewModel : ViewModelBase
             displayer.ToggleSelected();
             return;
         }
-            
-            
+        
         displayer = (btn.Parent as InstanceDisplayer)!;
         displayer.ToggleSelected();
             
@@ -177,7 +176,8 @@ public partial class MainWindowViewModel : ViewModelBase
     private async Task ChangeUpdateBranch()
     {
         var mb = new BranchMessageBox(LocalText.GlobalText.PleaseSelectABranch, LocalText.GlobalText.BranchSelection); 
-        await mb.ShowDialog(MainWindow.Current);
+        var result = await mb.ShowDialog<string>(MainWindow.Current);
+        Models.App.AppData.UpdateBranch = result;
     }
 
     [RelayCommand]
